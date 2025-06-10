@@ -1,120 +1,146 @@
-# Detection and Analysis of Hate Speech in Social Media against Women and Immigrants
+# How Does a Multilingual LM Handle Multiple Languages?
 
+**Anshul Patel**  
+Yardi School of Artificial Intelligence  
+IIT Delhi  
+aib232072@iitd.ac.in  
 
-
----
-
-## 📝 Overview
-
-This project focuses on detecting and analyzing hate speech targeting **women** and **immigrants** on social media (Twitter), in **English** and **Spanish**. The system integrates **BERT** embeddings with **LSTM** and **MLP** architectures to capture both deep contextual and sequential aspects of hate speech.
-
-It addresses key challenges such as:
-- Sarcasm, double entendre, and subtle hate
-- Multilingual content (English and Spanish)
-- Informal and creative social media language
-
-Our models outperform traditional methods in both accuracy and F1-score.
+**Bogam Sai Prabhath**  
+Yardi School of Artificial Intelligence  
+IIT Delhi  
+aib232079@iitd.ac.in  
 
 ---
 
-## 🎯 Objectives
+## Abstract
 
-- Develop a hybrid deep learning architecture using **BERT + BiLSTM / MLP**
-- Implement robust preprocessing for noisy social media text
-- Handle multilingual data and code-switching
-- Advance real-world hate speech detection for safer online environments
+In this study, we explore the multilingual capabilities of the pre-trained **BLOOM-1.7B** model through a series of tasks: **similarity between word embeddings across languages**, **probing for language understanding**, and **cross-lingual transferability**. The results show that BLOOM-1.7B effectively encodes semantic relationships across languages and demonstrates cross-lingual transferability, with performance depending on **language similarity** and **resource availability**. Our analysis offers insights into BLOOM’s potential for **zero-shot learning** in low-resource languages.
 
 ---
 
-## 📚 Tasks
+## 1 Introduction
 
-**Task A:** Binary classification  
-→ Detect if a tweet is **hateful** or **not hateful**.
+### 1.1 Background
 
-**Task B:** Multi-label classification  
-→ For hateful tweets:
-- Classify as **aggressive** or **non-aggressive**.
-- Identify whether the target is an **individual** or a **group**.
+Transformer-based LLMs have shown great progress in multilingual NLP. Understanding what linguistic information these models capture—syntax, semantics, morphology—is critical. Probing techniques allow us to analyze model representations and cross-lingual capabilities.
 
----
-
-## 🏗️ Model Architectures
-
-- **BERT + BiLSTM:** Captures deep contextual understanding + sequence modeling.
-- **BERT + MLP:** Leverages BERT embeddings + simple feedforward classifier.
+This project investigates the multilingual abilities of **BLOOM-1.7B**, focusing on:
+- Word embedding similarity across languages
+- Probing for syntactic and semantic understanding
+- Cross-lingual transferability to low-resource languages
 
 ---
 
-## 📂 Dataset
+## 2 Related Work
 
-- **Source:** SemEval-2019 Task 5
-- **Languages:** English and Spanish
-- **English:** 9000 train, 1000 dev, 2000 test tweets  
-- **Spanish:** 4469 train, 500 dev, 415 test tweets  
-- Annotations:
-  - `HS` (Hate Speech): 1/0
-  - `TR` (Target Range): Individual or Group
-  - `AG` (Aggressiveness): Aggressive or Non-aggressive
+- Models: **BERT**, **XLM-R**, **mBART**, **mBERT**, **GPT-based**
+- Probing studies show higher transformer layers capture semantics; lower layers syntax
+- Cross-lingual transfer critical for **low-resource languages**
+- Embedding alignment (e.g. **MUSE**) remains a key challenge
+
+BLOOM-1.7B leverages **shared subword tokenization** and **cross-lingual pretraining**, providing a promising architecture for multilingual tasks.
 
 ---
 
-## 🛠️ Preprocessing
+## 3 Methodology
 
-- Tokenization using `BertTokenizer`
-- Cleaning non-standard text
-- Handling of emojis/emoticons
-- Normalization & case folding
-- Hashtag splitting & extended character normalization
+### Task 1: Similarity between Word Embeddings
 
----
+- 992 words translated into **English, French, Spanish, Chinese, Hindi**
+- Embeddings extracted, normalized, compared using **cosine similarity**
+- Results show consistent semantic alignment across languages
 
-## ⚙️ Experimental Setup
+### Task 2: Probing to Understand Model Behavior
 
-- **Framework:** PyTorch + HuggingFace Transformers
-- **Hardware:** NVIDIA Tesla K80 GPU
-- **Hyperparameters:**
-  - Batch Size: `32`
-  - Epochs: `15`
-  - Optimizer: `Adam`
-  - Loss: `Cross-Entropy Loss`
+- **XNLI** dataset used for multilingual **textual entailment**
+- Probing classifier (Transformer block + MLP head) trained on top of frozen BLOOM layers
+- Layer-wise analysis reveals **middle layers** capture most generalizable multilingual features
 
----
+### Task 3: Cross-Lingual Transferability
 
-## 📊 Results (Selected)
-
-| Task                     | F1-score (EN BERT+BiLSTM) | F1-score (ES BERT+BiLSTM) |
-|--------------------------|--------------------------|--------------------------|
-| Hate / Not Hate          | 96.2                     | 75.2                     |
-| Individual / Group       | 96.6                     | 80.6                     |
-| Aggressive / Non-aggressive | 93.5                  | 75.5                     |
-
-Our **BERT+BiLSTM** consistently outperforms **BERT+MLP** and baseline methods.
+- Fine-tuned BLOOM on English **XNLI**
+- Tested zero-shot on 13 languages (Swahili, Arabic, Urdu, etc.)
+- Insights on how BLOOM transfers knowledge to low-resource languages
 
 ---
 
-## 💡 Contributions
+## 4 Dataset
 
-- Introduced a hybrid **BERT + BiLSTM** architecture for nuanced hate speech detection.
-- Designed a preprocessing pipeline specific to social media text.
-- Demonstrated superior performance in multilingual and subtle hate speech detection.
-- Contributed to safer digital spaces through improved moderation tools.
-
----
-
-## 🚀 Future Work
-
-- Develop **cross-lingual models**.
-- Improve handling of **sarcasm**, **pragmatics**, and **emerging slang**.
-- Enable **real-time detection** and feedback loops.
-- Collaborate with **social scientists** for broader insights.
+- **Word Similarity:** Custom dataset with translations (Google Translate)
+- **XNLI:** Cross-lingual NLI dataset (15 languages)
+  - Premise-Hypothesis pairs with entailment labels
 
 ---
 
-## 📚 References
+## 5 Experimental Setup
 
-1. Valerio Basile et al., *SemEval-2019 Task 5*
-2. Marzieh Mozafari et al., *BERT-Based Transfer Learning for Hate Speech Detection*
-3. María Antonia Paz et al., *Hate Speech: A Systematized Review*
-4. Alison Ribeiro et al., *CNNs for Hate Speech Detection Against Women and Immigrants*
+- **Model:** BLOOM-1.7B (Frozen backbone)
+- **Classifier:** Transformer block + 2-layer MLP head
+- **Training:** 60 epochs
+- **Batch Size:** 16
+- **Evaluation:** Layer-wise accuracy on validation set
 
 ---
+
+## 6 Results
+
+### Task 1: Word Similarity
+
+- Strong alignment for **English, French, Spanish**
+- Lower alignment for typologically distant languages (**Chinese**, **Hindi**)
+- Performance correlates with **training data representation** and **script similarity**
+
+### Task 2: Probing
+
+| Layer  | Avg Accuracy (%) |
+|--------|------------------|
+| Layer 16 | 57.78 |
+| Layer 13 | 57.54 |
+| Layer 14 | 57.22 |
+| ...    | ...  |
+| Layer 24 | 43.18 |
+
+- **Middle layers** (Layer 13–16) most effective for multilingual understanding
+- Final layers more task-specific and less generalizable
+
+### Task 3: Cross-Lingual Transferability
+
+| Language | Accuracy |
+|----------|----------|
+| English  | 59.4%    |
+| French   | 47.4%    |
+| Spanish  | 42.0%    |
+| Hindi    | 40.0%    |
+| Swahili  | 31.2%    |
+| Arabic   | 29.4%    |
+| Urdu     | 29.4%    |
+
+- **High-resource languages** perform better
+- **Low-resource languages** need further targeted fine-tuning
+- **Script differences** impact transferability
+
+---
+
+## 7 Conclusion
+
+Our study demonstrates that **BLOOM-1.7B** effectively encodes semantic relationships across multiple languages and supports **cross-lingual transfer**. Performance varies with **language similarity**, **training data availability**, and **script alignment**. The model shows promise for **zero-shot learning** in low-resource languages, but further work is needed to close the performance gap.
+
+---
+
+## 8 Contribution
+
+- **2023AIB2072**: Task 1, Task 3, Report  
+- **2023AIB2079**: Task 2, Report  
+
+---
+
+## References
+
+- OpenAI, GPT-4 Technical Report
+- Alexis Conneau et al., XNLI: Cross-lingual Natural Language Inference
+- Devlin et al., BERT
+- Pires et al., How Multilingual is Multilingual BERT?
+- Teven Le Scao et al., BLOOM: Open Multilingual Language Model
+
+---
+
