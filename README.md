@@ -1,89 +1,120 @@
-How Does a Multilingual LM Handle Multiple Languages?
+# Detection and Analysis of Hate Speech in Social Media against Women and Immigrants
 
 
 
-Overview
+---
 
-This project explores the multilingual capabilities of the BLOOM-1.7B language model through a series of tasks:
+## 📝 Overview
 
-Measuring word embedding similarity across languages
-Probing the model for multilingual language understanding
-Evaluating cross-lingual transferability in a zero-shot setting
-Our findings reveal that BLOOM-1.7B effectively encodes semantic relationships across languages and demonstrates strong cross-lingual transfer, with performance influenced by language similarity and resource availability.
+This project focuses on detecting and analyzing hate speech targeting **women** and **immigrants** on social media (Twitter), in **English** and **Spanish**. The system integrates **BERT** embeddings with **LSTM** and **MLP** architectures to capture both deep contextual and sequential aspects of hate speech.
 
-Objectives
+It addresses key challenges such as:
+- Sarcasm, double entendre, and subtle hate
+- Multilingual content (English and Spanish)
+- Informal and creative social media language
 
-Analyze how BLOOM-1.7B encodes cross-lingual semantic similarity.
-Probe layer-wise multilingual understanding using XNLI.
-Assess the model's ability to perform zero-shot transfer across high and low-resource languages.
-Understand challenges in multilingual representation learning.
-Tasks
+Our models outperform traditional methods in both accuracy and F1-score.
 
-Task 1: Word Embedding Similarity
-→ Evaluate cosine similarity of word embeddings across multiple languages.
+---
 
-Task 2: Probing
-→ Perform a multilingual NLI task (XNLI) using a layer-wise probing classifier.
+## 🎯 Objectives
 
-Task 3: Cross-Lingual Transferability
-→ Fine-tune on English NLI, test on 13 other languages in a zero-shot setup.
+- Develop a hybrid deep learning architecture using **BERT + BiLSTM / MLP**
+- Implement robust preprocessing for noisy social media text
+- Handle multilingual data and code-switching
+- Advance real-world hate speech detection for safer online environments
 
-Model Architecture
+---
 
-Base Model: BLOOM-1.7B (frozen parameters)
-Probing Classifier: Transformer block + MLP classification head
-Training Strategy: Lightweight classification head trained on top of BLOOM representations.
-Dataset
+## 📚 Tasks
 
-Task 1: Parallel word dataset (992 words, 5 languages: EN, FR, ES, HI, ZH)
-Task 2 & 3: XNLI dataset
-15 languages
-Premise-Hypothesis pairs
-Entailment labels (Entailment, Neutral, Contradiction)
-Preprocessing
+**Task A:** Binary classification  
+→ Detect if a tweet is **hateful** or **not hateful**.
 
-Tokenization with BLOOM tokenizer.
-Handling subword tokenization:
-Word embedding = average of subword embeddings.
-XNLI prompting: "Premise: <sentence1> <sep> Hypothesis: <sentence2>"
-Experimental Setup
+**Task B:** Multi-label classification  
+→ For hateful tweets:
+- Classify as **aggressive** or **non-aggressive**.
+- Identify whether the target is an **individual** or a **group**.
 
-Framework: PyTorch + HuggingFace Transformers
-Hardware: NVIDIA A100 GPU
-Hyperparameters:
-Batch Size: 16
-Epochs: 60
-Optimizer: Adam
-Loss: Cross-Entropy Loss
-Results (Selected)
+---
 
-Task	Observation
-Word Embedding Similarity	High alignment for related languages; challenges for typologically distant languages.
-Probing (XNLI)	Middle layers (Layers 13-16) encode the most generalizable multilingual representations.
-Cross-Lingual Transferability (XNLI)	High-resource languages perform well; significant drop in low-resource languages.
-Zero-Shot Accuracies:
+## 🏗️ Model Architectures
 
-English: 59.4%
-French: 47.4%
-Spanish: 42.0%
-Hindi: 40.0%
-Swahili, Arabic, Urdu: ~29-31%
-Contributions
+- **BERT + BiLSTM:** Captures deep contextual understanding + sequence modeling.
+- **BERT + MLP:** Leverages BERT embeddings + simple feedforward classifier.
 
-Introduced a systematic evaluation pipeline for BLOOM-1.7B’s multilingual understanding.
-Conducted in-depth analysis of layer-wise encoding and cross-lingual transfer.
-Highlighted strengths and limitations of BLOOM in multilingual NLP applications.
-Provided actionable insights for improving multilingual LMs.
-Future Work
+---
 
-Fine-tune BLOOM for low-resource languages.
-Extend probing to more linguistic features (morphology, syntax).
-Explore adapter-based fine-tuning for efficient multilingual adaptation.
-Investigate alignment techniques to bridge distant language gaps.
-References
+## 📂 Dataset
 
-T. Le Scao et al., BLOOM: A 176B-Parameter Open-Access Multilingual Language Model, 2022.
-A. Conneau et al., XNLI: Evaluating Cross-Lingual Sentence Representations, 2018.
-J. Devlin et al., BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding, 2019.
-T. Pires et al., How Multilingual is Multilingual BERT?, 2019.
-Achiam et al., GPT-4 Technical Report, 2023.
+- **Source:** SemEval-2019 Task 5
+- **Languages:** English and Spanish
+- **English:** 9000 train, 1000 dev, 2000 test tweets  
+- **Spanish:** 4469 train, 500 dev, 415 test tweets  
+- Annotations:
+  - `HS` (Hate Speech): 1/0
+  - `TR` (Target Range): Individual or Group
+  - `AG` (Aggressiveness): Aggressive or Non-aggressive
+
+---
+
+## 🛠️ Preprocessing
+
+- Tokenization using `BertTokenizer`
+- Cleaning non-standard text
+- Handling of emojis/emoticons
+- Normalization & case folding
+- Hashtag splitting & extended character normalization
+
+---
+
+## ⚙️ Experimental Setup
+
+- **Framework:** PyTorch + HuggingFace Transformers
+- **Hardware:** NVIDIA Tesla K80 GPU
+- **Hyperparameters:**
+  - Batch Size: `32`
+  - Epochs: `15`
+  - Optimizer: `Adam`
+  - Loss: `Cross-Entropy Loss`
+
+---
+
+## 📊 Results (Selected)
+
+| Task                     | F1-score (EN BERT+BiLSTM) | F1-score (ES BERT+BiLSTM) |
+|--------------------------|--------------------------|--------------------------|
+| Hate / Not Hate          | 96.2                     | 75.2                     |
+| Individual / Group       | 96.6                     | 80.6                     |
+| Aggressive / Non-aggressive | 93.5                  | 75.5                     |
+
+Our **BERT+BiLSTM** consistently outperforms **BERT+MLP** and baseline methods.
+
+---
+
+## 💡 Contributions
+
+- Introduced a hybrid **BERT + BiLSTM** architecture for nuanced hate speech detection.
+- Designed a preprocessing pipeline specific to social media text.
+- Demonstrated superior performance in multilingual and subtle hate speech detection.
+- Contributed to safer digital spaces through improved moderation tools.
+
+---
+
+## 🚀 Future Work
+
+- Develop **cross-lingual models**.
+- Improve handling of **sarcasm**, **pragmatics**, and **emerging slang**.
+- Enable **real-time detection** and feedback loops.
+- Collaborate with **social scientists** for broader insights.
+
+---
+
+## 📚 References
+
+1. Valerio Basile et al., *SemEval-2019 Task 5*
+2. Marzieh Mozafari et al., *BERT-Based Transfer Learning for Hate Speech Detection*
+3. María Antonia Paz et al., *Hate Speech: A Systematized Review*
+4. Alison Ribeiro et al., *CNNs for Hate Speech Detection Against Women and Immigrants*
+
+---
