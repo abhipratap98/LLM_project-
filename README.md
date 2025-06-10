@@ -1,16 +1,6 @@
 # How Does a Multilingual LM Handle Multiple Languages?
 
-**Anshul Patel**  
-Yardi School of Artificial Intelligence  
-IIT Delhi  
-aib232072@iitd.ac.in  
 
-**Bogam Sai Prabhath**  
-Yardi School of Artificial Intelligence  
-IIT Delhi  
-aib232079@iitd.ac.in  
-
----
 
 ## Abstract
 
